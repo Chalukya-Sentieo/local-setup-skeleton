@@ -18,6 +18,8 @@ services:
       context: ./
       dockerfile: ./deployment/Dockerfile.python2
     command: make run
+    ports:
+      - "8000:8000"
     volumes:
       - "../sentieopackages:/sentieopackages"
       - "./src/python2:/app"

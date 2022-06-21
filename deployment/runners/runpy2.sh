@@ -4,4 +4,4 @@ NC='\033[0m' # No Color
 echo -e "${COL}Pip Install${NC}"
 pip install -r requirements.txt
 echo -e "${COL}Starting Gunicorn Server${NC}"
-gunicorn server:app
+gunicorn -b 0.0.0.0 server:app

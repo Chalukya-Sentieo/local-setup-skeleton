@@ -7,4 +7,4 @@ run:
 	apk add entr && find . -type f -name "*.py" -o -name "*.txt" | entr -r /run.sh;
 
 run_prod:
-	gunicorn server:app
+	gunicorn -b 0.0.0.0 server:app
