@@ -4,9 +4,10 @@ services:
   cron-svc:
     container_name: eg-cron
     build:
-      context: ../
-      dockerfile: ./setup-example/deployment/Dockerfile.cron
+      context: ./
+      dockerfile: ./deployment/Dockerfile.cron
     volumes:
-      - "./install-docker.sh:/install-docker.sh"
-      - "${PWD}/${workdir}/src/cron:/app"
-      - "${PWD}/${workdir}deployment/extras/crontab:/etc/cron.d/crontab"
+      - "../sentieopackages:/sentieopackages"
+      - "../charts:/charts"
+      - "./src/cron:/app"
+      - "./deployment/extras/crontab:/etc/cron.d/crontab"
