@@ -5,10 +5,12 @@ RUN apk update && apk upgrade && apk add entr
 
 WORKDIR /app
 
-COPY ./sentieopackages /sentieopackages
 COPY ./src/cron/ /app
 # Add crontab file in the cron directory
 COPY ./deployment/extras/crontab /etc/cron.d/crontab
+
+# Make Sure to copy external repos at the end so that build time is lesser
+COPY ./sentieopackages /sentieopackages
 
 # Run the command on container startup
 # Changes to file will be automatically picked as long as the code is mounted

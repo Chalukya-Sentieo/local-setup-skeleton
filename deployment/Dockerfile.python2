@@ -1,0 +1,34 @@
+FROM python:2.7-alpine
+LABEL AUTHOR=chalukya@sentieo.com
+
+RUN apk update && apk upgrade
+
+WORKDIR /app
+
+COPY ./deployment/runners/runpy2.sh /run.sh
+COPY ./src/python2 /app
+
+RUN pip install --upgrade pip
+# Install Dependencies for gevent (requires gcc and a bunch of other libs)
+RUN apk add --no-cache \
+        build-base \
+        libressl-dev \
+        musl-dev \
+        libffi-dev
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Cleanup dependencies installed for pip install
+RUN apk del \
+        build-base \
+        libressl-dev \
+        musl-dev \
+        libffi-dev
+
+RUN chmod +x /run.sh
+RUN apk add make
+
+# Make Sure to copy external repos at the end so that build time is lesser
+COPY ./sentieopackages /sentieopackages
+
+# Always have production entrypoint here !!! Override in docker-compose
+CMD make run_prod

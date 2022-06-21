@@ -11,3 +11,14 @@ services:
       - "../charts:/charts"
       - "./src/cron:/app"
       - "./deployment/extras/crontab:/etc/cron.d/crontab"
+
+  python2-svc:
+    container_name: eg-py2
+    build:
+      context: ./
+      dockerfile: ./deployment/Dockerfile.python2
+    command: make run
+    volumes:
+      - "../sentieopackages:/sentieopackages"
+      - "./src/python2:/app"
+      - "./deployment/runners/runpy2.sh:/run.sh"
