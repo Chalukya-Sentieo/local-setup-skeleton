@@ -1,0 +1,18 @@
+FROM python:2.7-alpine
+LABEL AUTHOR=chalukya@sentieo.com
+
+RUN apk update && apk upgrade && apk add entr
+
+WORKDIR /app
+
+COPY ./setup-example/src/cron/ /app
+# Add crontab file in the cron directory
+COPY ./setup-example/deployment/extras/crontab /etc/cron.d/crontab
+
+# Run the command on container startup
+# Changes to file will be automatically picked as long as the code is mounted
+
+# Although changes to the `crontab` file won't be picked up automatically,
+# hence entr runs crontab command everytime changes are made to the cron
+
+CMD $(ls /etc/cron.d/crontab | entr -r crontab /etc/cron.d/crontab)& crond -f -d 10
