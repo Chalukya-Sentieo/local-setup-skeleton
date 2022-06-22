@@ -6,8 +6,9 @@ services:
     build:
       context: ./
       dockerfile: ./deployment/Dockerfile.cron
+    command: sh -c 'if [[ -z "" ]] ; then make run ; else tail -f /dev/null ; fi'
     volumes:
-      - "../sentieopackages:/sentieopackages"
+      #- "../sentieopackages:/sentieopackages"
       - "../charts:/charts"
       - "./src/cron:/app"
       - "./deployment/extras/crontab:/etc/cron.d/crontab"
@@ -17,10 +18,23 @@ services:
     build:
       context: ./
       dockerfile: ./deployment/Dockerfile.python2
-    command: make run
+    command: sh -c 'if [[ -z "" ]] ; then make run ; else tail -f /dev/null ; fi'
     ports:
       - "8000:8000"
     volumes:
       - "../sentieopackages:/sentieopackages"
       - "./src/python2:/app"
       - "./deployment/runners/runpy2.sh:/run.sh"
+
+  # python3-svc:
+  #   container_name: eg-py3
+  #   build:
+  #     context: ./
+  #     dockerfile: ./deployment/Dockerfile.python3
+  #   command: sh -c 'if [[ -z "" ]] ; then make run ; else tail -f /dev/null ; fi'
+  #   ports:
+  #     - "9000:8000"
+  #   volumes:
+  #     - "../sentieopackages:/sentieopackages"
+  #     - "./src/python3:/app"
+  #     - "./deployment/runners/runpy3.sh:/run.sh"

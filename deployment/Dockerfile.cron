@@ -1,8 +1,8 @@
 FROM python:2.7-alpine
 LABEL AUTHOR=chalukya@sentieo.com
 
-RUN apk update && apk upgrade && apk add entr
-
+RUN apk update && apk upgrade
+RUN apk add make
 WORKDIR /app
 
 COPY ./src/cron/ /app
@@ -18,4 +18,4 @@ COPY ./sentieopackages /sentieopackages
 # Although changes to the `crontab` file won't be picked up automatically,
 # hence entr runs crontab command everytime changes are made to the cron
 
-CMD $(ls /etc/cron.d/crontab | entr -r crontab /etc/cron.d/crontab)& crond -f -d 10
+CMD make run_prod

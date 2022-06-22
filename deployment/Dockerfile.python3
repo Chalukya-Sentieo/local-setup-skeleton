@@ -1,0 +1,29 @@
+FROM python:3.9-slim-bullseye
+
+WORKDIR /app
+RUN apt update -y && apt upgrade -y && apt install build-essential curl -y
+
+RUN curl -sSL https://install.python-poetry.org/ | python -
+
+RUN ln -s /root/.local/share/pypoetry/venv/bin/poetry /usr/bin/poetry
+RUN poetry config virtualenvs.create false
+
+# COMMENT OUT THE NEXT TWO LINES TO PREVENT BUILDING PACKAGES
+# COPY ./interface.proto /protobuf
+# RUN cd /protobuf && make install && make build
+
+COPY ./src/python3/pyproject.toml ./src/python3/poetry.lock* /app/
+
+ARG PACKAGR_USERNAME='xxxx'
+ARG PACKAGR_PASSWORD='xxxx'
+ENV POETRY_HTTP_BASIC_PACKAGR_USERNAME=${PACKAGR_USERNAME}
+ENV POETRY_HTTP_BASIC_PACKAGR_PASSWORD=${PACKAGR_PASSWORD}
+RUN poetry install --no-dev
+
+COPY ./src/python3 ./
+COPY ./deployment/runners/runpy3.sh /run.sh
+RUN chmod +x /run.sh
+
+EXPOSE 50051
+
+CMD make run_prod
