@@ -5,12 +5,15 @@ RUN apk update && apk upgrade
 RUN apk add make
 WORKDIR /app
 
+ENV PYTHONUNBUFFERED=1
+RUN echo -e "#!/bin/sh\nwhile getopts \":n:\" o; do case \"\${o}\" in n) n=\"\$OPTARG\";; esac done;\nawk -v name=\$n '{ print name, strftime(\"%H:%M:%S :\"), \$0; fflush(); }'" > /usr/bin/appendTS
+RUN chmod +x /usr/bin/appendTS
+
+COPY ./deployment/runners/runCron.sh /run.sh
+
 COPY ./src/cron/ /app
 # Add crontab file in the cron directory
 COPY ./deployment/extras/crontab /etc/cron.d/crontab
-
-# Make Sure to copy external repos at the end so that build time is lesser
-COPY ./sentieopackages /sentieopackages
 
 # Run the command on container startup
 # Changes to file will be automatically picked as long as the code is mounted

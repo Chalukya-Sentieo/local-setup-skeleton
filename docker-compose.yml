@@ -8,8 +8,7 @@ services:
       dockerfile: ./deployment/Dockerfile.cron
     command: sh -c 'if [[ -z "" ]] ; then make run ; else tail -f /dev/null ; fi'
     volumes:
-      #- "../sentieopackages:/sentieopackages"
-      - "../charts:/charts"
+      - "./deployment/runners/runCron.sh:/run.sh"
       - "./src/cron:/app"
       - "./deployment/extras/crontab:/etc/cron.d/crontab"
 
