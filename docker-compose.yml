@@ -25,6 +25,27 @@ services:
       - "./src/python2:/app"
       - "./deployment/runners/runpy2.sh:/run.sh"
 
+  scripts-svc:
+    container_name: scripts
+    build:
+      context: ./
+      dockerfile: ./deployment/Dockerfile.scripts
+    environment:
+      - RUN_SCRIPTS=s1,s2
+    #command: tail -f /dev/null
+    volumes:
+      - "./src/scripts:/scripts"
+
+  super-svc:
+    container_name: super
+    build:
+      context: ./
+      dockerfile: ./deployment/Dockerfile.supervisor
+    #command: tail -f /dev/null
+    volumes:
+      - "./src/scripts:/scripts"
+      - "./deployment/extras/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf"
+
   # python3-svc:
   #   container_name: eg-py3
   #   build:

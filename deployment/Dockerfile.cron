@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.3-labs
 FROM python:2.7-alpine
 LABEL AUTHOR=chalukya@sentieo.com
 
@@ -6,7 +7,17 @@ RUN apk add make
 WORKDIR /app
 
 ENV PYTHONUNBUFFERED=1
-RUN echo -e "#!/bin/sh\nwhile getopts \":n:\" o; do case \"\${o}\" in n) n=\"\$OPTARG\";; esac done;\nawk -v name=\$n '{ print name, strftime(\"%H:%M:%S :\"), \$0; fflush(); }'" > /usr/bin/appendTS
+
+COPY <<EOF /usr/bin/appendTS
+#!/bin/sh
+while getopts \":n:\" o;
+    do
+        case \"\${o}\" in n)
+        n=\"\$OPTARG\";;
+    esac
+done;
+awk -v name=\$n \'{ print name, strftime(\"%H:%M:%S :\"), \$0; fflush(); }\'
+EOF
 RUN chmod +x /usr/bin/appendTS
 
 COPY ./deployment/runners/runCron.sh /run.sh

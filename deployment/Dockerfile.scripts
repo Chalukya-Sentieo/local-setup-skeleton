@@ -1,9 +1,10 @@
 # syntax=docker/dockerfile:1.3-labs
+
 FROM python:2.7-slim
 
 RUN <<EOF
 apt update
-apt install -y gawk procps supervisor
+apt install -y gawk procps
 EOF
 
 COPY <<EOF /usr/bin/appendTS
@@ -11,17 +12,26 @@ COPY <<EOF /usr/bin/appendTS
 while getopts \":n:\" o;
     do
         case \"\${o}\" in n)
-        n=\"\$OPTARG\";;
-    esac
+        n=\"\$OPTARG\";; 
+    esac 
 done;
 awk -v name=\$n \'{ print name, strftime(\"%H:%M:%S :\"), \$0; fflush(); }\'
 EOF
 RUN chmod +x /usr/bin/appendTS
 
+ENV RUN_SCRIPTS ""
+
+# COPY <<EOF /root/.bashrc
+# #!/bin/bash
+# declare -a SCRIPTS
+# export SCRIPTS=(`echo \$RUN_SCRIPTS  | awk \'BEGIN{FS=\",\"}{for (i=1; i<=NF; i++) print \$i}\'`)
+# EOF
+
 WORKDIR /scripts
 
-COPY ./deployment/extras/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY ./deployment/runners/runScripts.sh /run.sh
+RUN chmod +x /run.sh
 
 COPY ./src/scripts .
 
-CMD /usr/bin/supervisord
+CMD /run.sh
